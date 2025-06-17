@@ -2,17 +2,22 @@
 
 using System.Globalization;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using TcpFlow;
-using ProtoBuf;
+using TcpFlow.Example;
 
-var server = Builder.CreateServer(54321);
-var clientOne = Builder.CreateClient(Dns.GetHostName(), 54321);
-var clientTwo = Builder.CreateClient(Dns.GetHostName(), 54321);
 
-//server.Map(new Action<TextMessage>(message => Console.WriteLine($"{message.TimeSent}:{message.Message}")));;
-//server.Map(new ActionWrapper<EasyMessage>(message => Console.WriteLine($"{message.Message}")));;
+var c = new Command() { Cmd = "echo" };
+
+Console.WriteLine(JsonSerializer.Serialize(c));
+
+
+//var cert = new X509Certificate2("server.pfx", "password");
+
+var server = Builder.CreateServer(54321);//.UseSsl(cert);
+var clientOne = Builder.CreateClient(Dns.GetHostName(), 54321);//.UseSsl();
+var clientTwo = Builder.CreateClient(Dns.GetHostName(), 54321);//.UseSsl();
 
 server.Map<TextMessage>((message,_) => Console.WriteLine($"{message.TimeSent}:{message.Message}"));
 clientOne.Map<TextMessage>((message,_) => Console.WriteLine($"{message.TimeSent}:{message.Message}"));
@@ -40,7 +45,7 @@ while (true)
 //Console.ReadLine();
 //Console.ReadLine();
 
-void HandleCommand(Command command, TcpClient client)
+void HandleCommand(Command command, TcpFlowContext context)
 {
     string response = command.Cmd.ToLower() switch
     {
@@ -52,35 +57,10 @@ alien.mp4",
         "time" => DateTime.Now.ToString(CultureInfo.InvariantCulture),
         _ => "Unknown command"
     };
-    Console.WriteLine($"Got {command.Cmd} from {command.Context?.ConnectionId} responding with {response}");
+    //Console.WriteLine($"Got {command.Cmd} from {command.Context?.ConnectionId} responding with {response}");
     //Console.WriteLine($"Server got {command.Cmd} responding with {response}");
-    server.Send(new CommandResponse() { Message = response }, client);
+    server.Send(new CommandResponse() { Message = response }, context.ConnectionId);;
 }
 
-[ProtoContract]
-public class TextMessage : TcpFlowHub
-{
-    [ProtoMember(1)]
-    public string Message { get; init; }
 
-    [ProtoMember(2)]
-    public DateTime TimeSent { get; init; }
-}
-
-[ProtoContract]
-public class Command : TcpFlowHub
-{
-    [ProtoMember(1)]
-    public string Cmd { get; init; }
-
-    [ProtoMember(2)]
-    public string Arg { get; init; }
-}
-
-[ProtoContract]
-public class CommandResponse : TcpFlowHub
-{
-    [ProtoMember(1)]
-    public string Message { get; init; }
-}
 

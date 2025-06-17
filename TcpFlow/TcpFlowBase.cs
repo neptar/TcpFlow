@@ -1,6 +1,9 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
-using TcpFlow.ProtobufHelpers;
+using System.Security.Cryptography.X509Certificates;
+using TcpFlow.Serializer;
 
 namespace TcpFlow;
 
@@ -12,31 +15,42 @@ public class TcpFlowBase
     
     //public Dictionary<Type, Action<EasyTcpHub>> ActionMap { get; } = [];
     public Dictionary<string, IHubAction> ActionMap { get; } = [];
+    public IFlowSerializer Serializer { get; init; } = new JsonFlowSerializer();
     public bool Running { get; private set; } = true;
 
     private byte[] _lengthPrefix = new byte[4];
     private byte[] _actionPrefix = new byte[100];
+    private X509Certificate2? _clientCertificate;
+    public X509Certificate2? ClientCertificate  => _clientCertificate;
+
+    public virtual TcpFlowBase UseSsl(X509Certificate2 serverCertificate)
+    {
+        _clientCertificate = serverCertificate;
+        return this;
+    }
     
-    public void Map<T>(Action<T, TcpClient> hub) where T : TcpFlowHub
+    public void Map<T>(Action<T, TcpFlowContext> hub) where T : FlowObject
     {
         ActionMap.Add(typeof(T).Name, new ActionWrapper<T>(hub));
     }
 
-    public virtual void SendActionFromTcpClient<T>(TcpClient client, TcpFlowHub hub) where T : TcpFlowHub
+    public virtual void SendActionFromTcpClient<T>(TcpClient client, T dataObject, Stream stream) where T : FlowObject
     {
-        //inject context into hub
-        Console.WriteLine($"Client context = {client.Client.RemoteEndPoint.ToString()}");
-        hub.Context = new TcpFlowContext() { ConnectionId = client.Client.RemoteEndPoint.ToString() };
-        NetworkStream stream = client.GetStream();
-        var bytes = Proto.Serialize(hub);
-        stream.Write(BitConverter.GetBytes(bytes.Length), 0, 4);
-        //byte[] action = new byte[100];
-        using var ms = new MemoryStream(_actionPrefix);
-        using var writer = new BinaryWriter(ms);
-        writer.Write(typeof(T).Name);
-        stream.Write(_actionPrefix, 0, 100);
-        stream.Write(bytes, 0, bytes.Length);
-
+        try
+        {
+            //inject context into hub
+            Debug.WriteLine($"Client context = {client.Client.RemoteEndPoint}");
+            var bytes = Serializer.Serialize(dataObject);
+            stream.Write(BitConverter.GetBytes(bytes.Length), 0, 4);
+            using var ms = new MemoryStream(_actionPrefix);
+            using var writer = new BinaryWriter(ms);
+            writer.Write(typeof(T).Name);
+            stream.Write(_actionPrefix, 0, 100);
+            stream.Write(bytes, 0, bytes.Length);
+        }catch(Exception e)
+        {
+            Debug.WriteLine(e.ToString());
+        }
     }
     
     

@@ -1,18 +1,27 @@
 using System.Diagnostics;
+using System.Net.Security;
 using System.Net.Sockets;
-using TcpFlow.ProtobufHelpers;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TcpFlow;
 
 public class TcpFlowServer:TcpFlowBase
 {
-    List<TcpClient> _clients = [];
+    List<(TcpClient Client, Stream Stream)> _clients = [];
+
+    public override TcpFlowServer UseSsl(X509Certificate2 serverCertificate)
+    {
+        base.UseSsl(serverCertificate);
+        return this;
+    }
+    
     public void Listen()
     {
         //HelloWorldGenerated.HelloWorld.SayHello();
         TcpListener listener = TcpListener.Create(Port);
         listener.Start();
-        Console.WriteLine("Server is listening");
+        Debug.WriteLine("Server is listening");
         Task.Run(()=>HandleClients(listener));
     }
 
@@ -21,7 +30,7 @@ public class TcpFlowServer:TcpFlowBase
         while (Running)
         {
             var client = listener.AcceptTcpClient();
-            _clients.Add(client);
+            
             Debug.WriteLine("Client connected");
             Task.Run(()=>HandleClient(client));
         }
@@ -30,7 +39,22 @@ public class TcpFlowServer:TcpFlowBase
 
     private Task HandleClient(TcpClient client)
     {
-        using var stream = client.GetStream();
+        Stream stream;
+        if (ClientCertificate is not null)
+        {
+            stream = new SslStream(client.GetStream(), false);
+            _clients.Add((client, stream));
+            ((SslStream)stream).AuthenticateAsServer(ClientCertificate,
+                clientCertificateRequired: false,
+                enabledSslProtocols: SslProtocols.Tls12 | SslProtocols.Tls13,
+                checkCertificateRevocation: true);
+        }
+        else
+        {
+            stream = client.GetStream();
+            _clients.Add((client, stream));
+        }
+
         while (Running)
         {
             byte[] lengthPrefix = new byte[4];
@@ -48,7 +72,7 @@ public class TcpFlowServer:TcpFlowBase
                 continue;
             }
 
-            Debug.WriteLine($"Server receiving date from {client.Client.RemoteEndPoint}");
+            Debug.WriteLine($"Server receiving data from {client.Client.RemoteEndPoint}");
             Debug.WriteLine($"Server received data of length: {length}");
             stream.ReadExactly(actionPrefix, 0, 100);
             
@@ -61,22 +85,26 @@ public class TcpFlowServer:TcpFlowBase
             byte[] data = new byte[length];
             stream.ReadExactly(data, 0, length);
             var result = TcpFlowTypeManager.Deserialize(action, data);
-            ActionMap[action].Execute(result, client);//.Execute(result);)
+            Debug.WriteLine($"Server Executing with context: {client.Client.RemoteEndPoint}");
+            ActionMap[action].Execute(result, new TcpFlowContext() { ConnectionId = client.Client.RemoteEndPoint.ToString()});//.Execute(result);)
         }
+        _clients.Remove((client,stream));
         return Task.CompletedTask;
     }
     
-    public void SendAll<T>(T hub) where T : TcpFlowHub
+    public void SendAll<T>(T hub) where T : FlowObject
     {
         Debug.WriteLine($"Sending to {_clients.Count} clients");
         foreach (var client in _clients)
         {
-            SendActionFromTcpClient<T>(client, hub);
+            SendActionFromTcpClient<T>(client.Client, hub, client.Stream);
         }
     }
-    public void Send<T>(T hub, TcpClient client) where T : TcpFlowHub
+    public void Send<T>(T hub, string connectionID) where T : FlowObject
     {
-        SendActionFromTcpClient<T>(client, hub);
+        //get the connection
+        var client = _clients.FirstOrDefault(c => c.Client.Client.RemoteEndPoint.ToString() == connectionID);
+        SendActionFromTcpClient<T>(client.Client, hub, client.Stream);;
     }
     
 }

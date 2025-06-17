@@ -5,8 +5,10 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-        <RootNamespace>EasyTcp.Generator</RootNamespace>
-        <Version>1.0.2</Version>
+        <RootNamespace>TcpFlow.Generator</RootNamespace>
+        <Version>1.0.3</Version>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <IsRoslynComponent>true</IsRoslynComponent>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,11 +16,10 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
-<!--        <None Include="$(OutputPath)EacyTcp.Generator.dll"-->
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" PrivateAssets="all" />
+<!--        <None Include="$(OutputPath)\TcpFlow.Generator.dll"-->
 <!--              Pack="true"-->
 <!--              PackagePath="analyzers/dotnet/cs"-->
 <!--              Visible="false" />-->
     </ItemGroup>
-
 </Project>

@@ -5,21 +5,25 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>TcpFlow</RootNamespace>
-        <Version>1.0.2</Version>
+        <Version>1.0.3</Version>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Description>TcpFlow is a TCP communication library with source generation support</Description>
+        <Authors>Rob Walker</Authors>
+        <PackageId>TcpFlow</PackageId>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="protobuf-net" Version="3.2.52" />
 <!--        <ProjectReference Include="..\EasyTcp.Generator\EasyTcp.Generator.csproj"-->
 <!--                          OutputItemType="Analyzer"-->
 <!--                          ReferenceOutputAssembly="false"/>-->
         <ProjectReference Include="..\TcpFlow.Generator\TcpFlow.Generator.csproj"
                           OutputItemType="Analyzer"
                           ReferenceOutputAssembly="true"/>
-<!--                <None Include="$(OutputPath)TcpFlow.Generator.dll"-->
-<!--                      Pack="true"-->
-<!--                      PackagePath="analyzers/dotnet/cs"-->
-<!--                      Visible="false" />-->
+                <None Include="$(OutputPath)TcpFlow.Generator.dll"
+                      Pack="true"
+                      PackagePath="analyzers/dotnet/cs"
+                      Visible="false" />
     </ItemGroup>
+ 
 
 </Project>

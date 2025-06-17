@@ -25,7 +25,7 @@ public class TcpFlowHubIncrementalGenerator : IIncrementalGenerator
             .Select((tuple, _) =>
             {
                 var (compilation, classDecls) = tuple;
-                var TcpFlowHubType = compilation.GetTypeByMetadataName("TcpFlow.TcpFlowHub");
+                var TcpFlowHubType = compilation.GetTypeByMetadataName("TcpFlow.FlowObject");
                 if (TcpFlowHubType == null)
                     return ImmutableArray<INamedTypeSymbol>.Empty;
 
@@ -60,8 +60,8 @@ public class TcpFlowHubIncrementalGenerator : IIncrementalGenerator
             //var source = GenerateDispatcherClass(classes);
             spc.AddSource("TcpFlowHubDispatcher.g.cs", source);
             
-            var partialSource = GeneratePartialHub(classes);
-            spc.AddSource("TcpFlowHub.g.cs", partialSource);
+            //var partialSource = GeneratePartialHub(classes);
+            //spc.AddSource("TcpFlowHub.g.cs", partialSource);
         });
     }
 
@@ -144,12 +144,14 @@ namespace TcpFlow
 using System;
 using System.Net;
 using TcpFlow;
-using TcpFlow.ProtobufHelpers;
+using TcpFlow.Serializer;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TcpFlow
 {{
     public static class Builder
     {{
+
         public static TcpFlowServer CreateServer(int port)
         {{
             if (!TcpFlowTypeManager.Registered)
@@ -163,7 +165,7 @@ namespace TcpFlow
                 Ip = IPAddress.Loopback
             }};
         }}
-    
+
         public static TcpFlowClient CreateClient(string host, int port)
         {{
             if (!TcpFlowTypeManager.Registered)
@@ -177,16 +179,19 @@ namespace TcpFlow
                 Ip = Dns.GetHostAddresses(host)[0]
             }};
         }}
-        private static void Register()
+
+        private static void Register(IFlowSerializer serializer = null)
         {{
+            if (serializer is null)
+                serializer = new JsonFlowSerializer();
 ");
     
         foreach (var type in classes)
         {
             source.AppendLine($@"
-            TcpFlowTypeManager.RegisterType<{type.Name}>(data => 
+            TcpFlowTypeManager.RegisterType<{type.ToDisplayString()}>(data => 
             {{
-                return Proto.Deserialize<{type.Name}>(data);
+                return serializer.Deserialize<{type.ToDisplayString()}>(data);
             }});");
         }
 
