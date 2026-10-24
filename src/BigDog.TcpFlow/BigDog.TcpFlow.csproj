@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>nullable</WarningsAsErrors>
+        <RootNamespace>TcpFlow</RootNamespace>
+        <IsAotCompatible>true</IsAotCompatible>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Version>2.0.0</Version>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Description>TcpFlow is a NativeAOT-friendly TCP messaging library. A source generator discovers your message types and MemoryPack serializes them.</Description>
+        <Authors>Rob Walker</Authors>
+        <PackageId>TcpFlow</PackageId>
+        <PackageTags>tcp;networking;messaging;memorypack;source-generator;aot</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- TcpFlow's generator emits MemoryPack formatters for flow types. PrivateAssets="none" also flows MemoryPack's
+             own generator to consumers, so payload types they choose to mark [MemoryPackable] still work. -->
+        <PackageReference Include="MemoryPack" Version="1.21.4" PrivateAssets="none" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Build the generator first so it can be packed, but don't run it on (or reference it from) this library. -->
+        <ProjectReference Include="..\TcpFlow.Generator\TcpFlow.Generator.csproj"
+                          ReferenceOutputAssembly="false"
+                          PrivateAssets="all" />
+        <None Include="..\TcpFlow.Generator\bin\$(Configuration)\netstandard2.0\TcpFlow.Generator.dll"
+              Pack="true"
+              PackagePath="analyzers/dotnet/cs"
+              Visible="false" />
+        <None Include="..\README.md" Pack="true" PackagePath="\" Visible="false" />
+    </ItemGroup>
+
+</Project>
