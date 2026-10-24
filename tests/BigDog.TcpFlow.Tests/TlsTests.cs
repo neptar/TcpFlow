@@ -2,9 +2,9 @@ using System.Net;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using static TcpFlow.Tests.TestHelpers;
+using static BigDog.TcpFlow.Tests.TestHelpers;
 
-namespace TcpFlow.Tests;
+namespace BigDog.TcpFlow.Tests;
 
 public class TlsTests
 {
@@ -18,7 +18,11 @@ public class TlsTests
         request.CertificateExtensions.Add(san.Build());
         using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-5), DateTimeOffset.UtcNow.AddHours(1));
         // Round-trip through PFX so the private key is usable by SslStream on every platform.
+#if NET9_0_OR_GREATER
         return X509CertificateLoader.LoadPkcs12(certificate.Export(X509ContentType.Pfx), null);
+#else
+        return new X509Certificate2(certificate.Export(X509ContentType.Pfx));
+#endif
     }
 
     private static TcpFlowServer StartTlsServer(X509Certificate2 certificate, Action<TcpFlowServer>? configure = null)

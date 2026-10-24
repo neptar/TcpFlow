@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace TcpFlow.Generator;
+namespace BigDog.TcpFlow.Generator;
 
 // All models are made only of value-equal data (no symbols or syntax) so the incremental pipeline can cache them.
 

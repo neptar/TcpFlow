@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 
-namespace TcpFlow.Example.Demos;
+namespace BigDog.TcpFlow.Example.Demos;
 
 /// <summary>
 /// Type commands (ls, cat, echo &lt;text&gt;, time) and see the server's answers. Run it as a single process, or split it:

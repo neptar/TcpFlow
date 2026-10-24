@@ -1,7 +1,7 @@
 using MemoryPack;
-using static TcpFlow.Tests.TestHelpers;
+using static BigDog.TcpFlow.Tests.TestHelpers;
 
-namespace TcpFlow.Tests;
+namespace BigDog.TcpFlow.Tests;
 
 public class SerializationTests
 {

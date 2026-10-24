@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 
-namespace TcpFlow.Internal;
+namespace BigDog.TcpFlow.Internal;
 
 internal static partial class Log
 {

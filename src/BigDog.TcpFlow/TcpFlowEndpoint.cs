@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using TcpFlow.Internal;
-using TcpFlow.Serializer;
+using BigDog.TcpFlow.Internal;
+using BigDog.TcpFlow.Serializer;
 
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>Functionality shared by <see cref="TcpFlowServer"/> and <see cref="TcpFlowClient"/>: handlers, framing and dispatch.</summary>
 public abstract class TcpFlowEndpoint : IAsyncDisposable

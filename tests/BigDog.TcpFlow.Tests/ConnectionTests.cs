@@ -1,9 +1,9 @@
 using System.Net;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
-using static TcpFlow.Tests.TestHelpers;
+using static BigDog.TcpFlow.Tests.TestHelpers;
 
-namespace TcpFlow.Tests;
+namespace BigDog.TcpFlow.Tests;
 
 public class ConnectionTests
 {

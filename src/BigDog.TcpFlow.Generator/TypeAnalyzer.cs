@@ -5,7 +5,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace TcpFlow.Generator;
+namespace BigDog.TcpFlow.Generator;
 
 /// <summary>
 /// Works out how to serialize a flow type and every payload type it reaches, enforcing the "plain data" rules:
@@ -14,7 +14,7 @@ namespace TcpFlow.Generator;
 internal sealed class TypeAnalyzer
 {
     private const int MaxMembers = 249; // MemoryPack object headers reserve 250-255.
-    private const string FlowIdAttributeName = "TcpFlow.FlowIdAttribute";
+    private const string FlowIdAttributeName = "BigDog.TcpFlow.FlowIdAttribute";
     private const string MemoryPackableAttributeName = "MemoryPack.MemoryPackableAttribute";
 
     private static readonly SymbolDisplayFormat TypeFormat = SymbolDisplayFormat.FullyQualifiedFormat;

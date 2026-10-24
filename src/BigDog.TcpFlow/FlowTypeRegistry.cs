@@ -1,9 +1,9 @@
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using TcpFlow.Serializer;
+using BigDog.TcpFlow.Serializer;
 
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>Writes a flow object to <paramref name="writer"/> using <paramref name="serializer"/>.</summary>
 public delegate void FlowSerializeHandler(IFlowSerializer serializer, IBufferWriter<byte> writer, FlowObject message);
@@ -58,13 +58,13 @@ public sealed class FlowTypeInfo
 
 /// <summary>
 /// Maps flow types to wire ids. The source generator emits one registry per project
-/// (<c>TcpFlow.FlowTypes.Registry</c>) and merges it into <see cref="Default"/> at module load.
+/// (<c>BigDog.TcpFlow.FlowTypes.Registry</c>) and merges it into <see cref="Default"/> at module load.
 /// </summary>
 public sealed class FlowTypeRegistry
 {
     private readonly ConcurrentDictionary<uint, FlowTypeInfo> _byId = new();
     private readonly ConcurrentDictionary<Type, FlowTypeInfo> _byType = new();
-    private readonly Lock _gate = new();
+    private readonly object _gate = new(); // System.Threading.Lock needs .NET 9+
 
     /// <summary>
     /// The process-wide registry that servers and clients use unless

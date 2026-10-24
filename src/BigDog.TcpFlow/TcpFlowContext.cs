@@ -1,4 +1,4 @@
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>Passed to every message handler. One instance exists per connection.</summary>
 public sealed class TcpFlowContext

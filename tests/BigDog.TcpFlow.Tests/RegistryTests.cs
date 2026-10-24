@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text;
 
-namespace TcpFlow.Tests;
+namespace BigDog.TcpFlow.Tests;
 
 public class RegistryTests
 {
@@ -20,8 +20,8 @@ public class RegistryTests
     public void Generated_ids_are_the_fnv1a_hash_of_the_full_name()
     {
         Assert.True(FlowTypes.Registry.TryGet(typeof(Ping), out var info));
-        Assert.Equal(Fnv1a("TcpFlow.Tests.Ping"), info.Id);
-        Assert.Equal("TcpFlow.Tests.Ping", info.Name);
+        Assert.Equal(Fnv1a("BigDog.TcpFlow.Tests.Ping"), info.Id);
+        Assert.Equal("BigDog.TcpFlow.Tests.Ping", info.Name);
     }
 
     [Fact]

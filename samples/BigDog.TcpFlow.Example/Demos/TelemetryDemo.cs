@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using Microsoft.Extensions.Logging;
 
-namespace TcpFlow.Example.Demos;
+namespace BigDog.TcpFlow.Example.Demos;
 
 /// <summary>
 /// Throughput: several sensors stream readings concurrently over one connection each. Sends are safe from any

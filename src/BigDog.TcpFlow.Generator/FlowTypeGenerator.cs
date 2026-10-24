@@ -5,17 +5,17 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace TcpFlow.Generator;
+namespace BigDog.TcpFlow.Generator;
 
 /// <summary>
-/// Finds every concrete <c>TcpFlow.FlowObject</c> subclass and generates <c>TcpFlow.FlowTypes</c>: a registry mapping
+/// Finds every concrete <c>BigDog.TcpFlow.FlowObject</c> subclass and generates <c>BigDog.TcpFlow.FlowTypes</c>: a registry mapping
 /// each type to a stable wire id, plus MemoryPack formatters for the flow types and the payload types they use, so
 /// messages can be plain classes with no attributes.
 /// </summary>
 [Generator]
 public sealed class FlowTypeGenerator : IIncrementalGenerator
 {
-    private const string FlowObjectMetadataName = "TcpFlow.FlowObject";
+    private const string FlowObjectMetadataName = "BigDog.TcpFlow.FlowObject";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

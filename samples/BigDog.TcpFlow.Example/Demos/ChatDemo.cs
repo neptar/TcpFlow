@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using Microsoft.Extensions.Logging;
 
-namespace TcpFlow.Example.Demos;
+namespace BigDog.TcpFlow.Example.Demos;
 
 /// <summary>
 /// A chat room: the server keeps per-connection state, relays messages with BroadcastAsync,

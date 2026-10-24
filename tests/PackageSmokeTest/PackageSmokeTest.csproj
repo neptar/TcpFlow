@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Builds against the packed BigDog.TcpFlow .nupkg (not the project), exactly as a consumer would.
+         CI runs it with the .NET 8 SDK to prove the generator loads in the oldest supported compiler.
+         Not part of the solution: run `dotnet pack src/BigDog.TcpFlow -c Release -o artifacts` first. -->
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TcpFlowVersion Condition="'$(TcpFlowVersion)' == ''">$(VersionPrefix)</TcpFlowVersion>
+        <RestoreAdditionalProjectSources>$(MSBuildThisFileDirectory)..\..\artifacts</RestoreAdditionalProjectSources>
+        <!-- An isolated cache, so a re-packed build with the same version number is always picked up. -->
+        <RestorePackagesPath>$(MSBuildThisFileDirectory)obj\packages</RestorePackagesPath>
+        <!-- CS8032/CS9057: the generator failed to load. The TCPFLOW warnings prove it ran. -->
+        <WarningsAsErrors>CS8032;CS9057;TCPFLOW007;TCPFLOW008</WarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BigDog.TcpFlow" Version="$(TcpFlowVersion)" />
+    </ItemGroup>
+
+</Project>

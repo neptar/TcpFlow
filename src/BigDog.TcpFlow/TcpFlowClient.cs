@@ -2,9 +2,9 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using TcpFlow.Internal;
+using BigDog.TcpFlow.Internal;
 
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>Connects to a <see cref="TcpFlowServer"/>, sends messages and dispatches messages the server pushes back.</summary>
 public sealed class TcpFlowClient : TcpFlowEndpoint
@@ -24,7 +24,7 @@ public sealed class TcpFlowClient : TcpFlowEndpoint
     }
 
     /// <summary>Creates a client. Call <see cref="ConnectAsync"/> to connect.</summary>
-    public TcpFlowClient(TcpFlowClientOptions options) : base(options, "TcpFlow.TcpFlowClient")
+    public TcpFlowClient(TcpFlowClientOptions options) : base(options, "BigDog.TcpFlow.TcpFlowClient")
     {
         _options = options;
         _pinnedCertificateHash = options.PinnedServerCertificate?.GetCertHash(HashAlgorithmName.SHA256);

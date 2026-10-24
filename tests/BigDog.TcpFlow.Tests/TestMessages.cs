@@ -1,6 +1,6 @@
 using MemoryPack;
 
-namespace TcpFlow.Tests;
+namespace BigDog.TcpFlow.Tests;
 
 public class Ping : FlowObject
 {

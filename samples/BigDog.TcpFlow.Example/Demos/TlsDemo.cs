@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
-namespace TcpFlow.Example.Demos;
+namespace BigDog.TcpFlow.Example.Demos;
 
 /// <summary>
 /// TLS with a self-signed certificate. The client pins the certificate so it trusts exactly that one; a client

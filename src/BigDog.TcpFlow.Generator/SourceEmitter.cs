@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TcpFlow.Generator;
+namespace BigDog.TcpFlow.Generator;
 
 /// <summary>Renders <c>FlowTypes.g.cs</c>: the type registry, one MemoryPack formatter per shape, and their registration.</summary>
 internal static class SourceEmitter
@@ -17,23 +17,23 @@ internal static class SourceEmitter
             #nullable disable warnings
             #pragma warning disable CA2255 // ModuleInitializer in a library: intentional, it registers this assembly's flow types.
 
-            namespace TcpFlow
+            namespace BigDog.TcpFlow
             {
                 /// <summary>Flow types discovered by the TcpFlow source generator in this project and its references.</summary>
-                [global::System.CodeDom.Compiler.GeneratedCode("TcpFlow.Generator", "{{version}}")]
+                [global::System.CodeDom.Compiler.GeneratedCode("BigDog.TcpFlow.Generator", "{{version}}")]
                 internal static class FlowTypes
                 {
                     /// <summary>A registry containing exactly the discovered flow types.</summary>
-                    public static global::TcpFlow.FlowTypeRegistry Registry { get; } = Create();
+                    public static global::BigDog.TcpFlow.FlowTypeRegistry Registry { get; } = Create();
 
-                    private static global::TcpFlow.FlowTypeRegistry Create()
+                    private static global::BigDog.TcpFlow.FlowTypeRegistry Create()
                     {
-                        var registry = new global::TcpFlow.FlowTypeRegistry();
+                        var registry = new global::BigDog.TcpFlow.FlowTypeRegistry();
 
             """);
 
         foreach (var type in flowTypes)
-            source.AppendLine($"""            registry.Add(global::TcpFlow.FlowTypeInfo.Create<{type.FullName}>(0x{type.Id:X8}u, "{type.QualifiedName}"));""");
+            source.AppendLine($"""            registry.Add(global::BigDog.TcpFlow.FlowTypeInfo.Create<{type.FullName}>(0x{type.Id:X8}u, "{type.QualifiedName}"));""");
 
         source.Append("""
                         return registry;
@@ -41,7 +41,7 @@ internal static class SourceEmitter
 
                     /// <summary>
                     /// Registers the generated MemoryPack formatters and adds this project's flow types to
-                    /// <see cref="global::TcpFlow.FlowTypeRegistry.Default"/> when the assembly loads.
+                    /// <see cref="global::BigDog.TcpFlow.FlowTypeRegistry.Default"/> when the assembly loads.
                     /// </summary>
                     [global::System.Runtime.CompilerServices.ModuleInitializer]
                     internal static void Initialize()
@@ -50,12 +50,12 @@ internal static class SourceEmitter
             """);
 
         foreach (var shape in shapes)
-            source.AppendLine($"            Register(new global::TcpFlow.Generated.{shape.FormatterName}());");
+            source.AppendLine($"            Register(new global::BigDog.TcpFlow.Generated.{shape.FormatterName}());");
         foreach (var registration in registrations)
             source.AppendLine($"            Register(new {registration.FormatterType}());");
 
         source.Append("""
-                        global::TcpFlow.FlowTypeRegistry.Default.Add(Registry);
+                        global::BigDog.TcpFlow.FlowTypeRegistry.Default.Add(Registry);
                     }
 
                     private static void Register<T>(global::MemoryPack.MemoryPackFormatter<T> formatter)
@@ -66,7 +66,7 @@ internal static class SourceEmitter
                 }
             }
 
-            namespace TcpFlow.Generated
+            namespace BigDog.TcpFlow.Generated
             {
 
             """);
@@ -87,7 +87,7 @@ internal static class SourceEmitter
 
         source.AppendLine($$"""
                 /// <summary>Generated MemoryPack formatter for <see cref="{{type}}"/>.</summary>
-                [global::System.CodeDom.Compiler.GeneratedCode("TcpFlow.Generator", null)]
+                [global::System.CodeDom.Compiler.GeneratedCode("BigDog.TcpFlow.Generator", null)]
                 internal sealed class {{shape.FormatterName}} : global::MemoryPack.MemoryPackFormatter<{{type}}>
                 {
                     public override void Serialize<TBufferWriter>(ref global::MemoryPack.MemoryPackWriter<TBufferWriter> writer, scoped ref {{valueType}} value)

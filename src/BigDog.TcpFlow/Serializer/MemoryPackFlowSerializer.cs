@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using MemoryPack;
 
-namespace TcpFlow.Serializer;
+namespace BigDog.TcpFlow.Serializer;
 
 /// <summary>
 /// The default serializer. The TcpFlow source generator emits and registers a MemoryPack formatter for every flow

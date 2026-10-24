@@ -1,6 +1,6 @@
 using System.Buffers;
 
-namespace TcpFlow.Internal;
+namespace BigDog.TcpFlow.Internal;
 
 /// <summary>An <see cref="IBufferWriter{T}"/> backed by <see cref="ArrayPool{T}"/>. Dispose to return the buffer.</summary>
 internal sealed class PooledBufferWriter(int initialCapacity = 256) : IBufferWriter<byte>, IDisposable

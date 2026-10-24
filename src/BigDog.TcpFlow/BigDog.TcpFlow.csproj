@@ -1,39 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <!-- net8.0 also serves .NET 9 projects; net10.0 is the current LTS. -->
+        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>nullable</WarningsAsErrors>
-        <RootNamespace>TcpFlow</RootNamespace>
+        <RootNamespace>BigDog.TcpFlow</RootNamespace>
         <IsAotCompatible>true</IsAotCompatible>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Version>2.0.0</Version>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Description>TcpFlow is a NativeAOT-friendly TCP messaging library. A source generator discovers your message types and MemoryPack serializes them.</Description>
-        <Authors>Rob Walker</Authors>
-        <PackageId>TcpFlow</PackageId>
-        <PackageTags>tcp;networking;messaging;memorypack;source-generator;aot</PackageTags>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <PackageId>BigDog.TcpFlow</PackageId>
+        <Title>BigDog.TcpFlow</Title>
+        <Description>Typed, NativeAOT-friendly messaging over TCP. Send plain C# classes between .NET apps: a source generator discovers your message types and generates fast MemoryPack serializers, with TLS, broadcasts and compile-time checks built in.</Description>
+        <PackageTags>tcp;networking;messaging;sockets;tls;memorypack;source-generator;aot;nativeaot</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+
+        <!-- Source Link (built into the .NET SDK) plus a symbol package, so users can step into the library's source. -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <!-- Checks the package's target frameworks are consistent. After 1.0.0 ships, set
+             PackageValidationBaselineVersion to catch accidental breaking changes. -->
+        <EnablePackageValidation>true</EnablePackageValidation>
     </PropertyGroup>
 
     <ItemGroup>
         <!-- TcpFlow's generator emits MemoryPack formatters for flow types. PrivateAssets="none" also flows MemoryPack's
              own generator to consumers, so payload types they choose to mark [MemoryPackable] still work. -->
         <PackageReference Include="MemoryPack" Version="1.21.4" PrivateAssets="none" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+        <!-- The lowest version that supports everything used, so the package doesn't force upgrades on .NET 8 apps. -->
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
     </ItemGroup>
 
     <ItemGroup>
         <!-- Build the generator first so it can be packed, but don't run it on (or reference it from) this library. -->
-        <ProjectReference Include="..\TcpFlow.Generator\TcpFlow.Generator.csproj"
+        <ProjectReference Include="..\BigDog.TcpFlow.Generator\BigDog.TcpFlow.Generator.csproj"
                           ReferenceOutputAssembly="false"
                           PrivateAssets="all" />
-        <None Include="..\TcpFlow.Generator\bin\$(Configuration)\netstandard2.0\TcpFlow.Generator.dll"
+        <None Include="..\BigDog.TcpFlow.Generator\bin\$(Configuration)\netstandard2.0\BigDog.TcpFlow.Generator.dll"
               Pack="true"
               PackagePath="analyzers/dotnet/cs"
               Visible="false" />
-        <None Include="..\README.md" Pack="true" PackagePath="\" Visible="false" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
     </ItemGroup>
 
 </Project>

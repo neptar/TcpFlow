@@ -1,0 +1,22 @@
+<Project>
+
+    <!-- Shared by every project in the repository. -->
+    <PropertyGroup>
+        <VersionPrefix>1.0.0</VersionPrefix>
+        <Authors>Rob Walker</Authors>
+        <Copyright>Copyright (c) 2026 Rob Walker</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/neptar/TcpFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/neptar/TcpFlow</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+
+        <!-- Only the library opts in to packing. -->
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <!-- Deterministic paths in CI so Source Link and reproducible builds work. -->
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+</Project>

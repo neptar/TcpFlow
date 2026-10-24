@@ -4,9 +4,9 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using TcpFlow.Serializer;
+using BigDog.TcpFlow.Serializer;
 
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>Settings shared by <see cref="TcpFlowServer"/> and <see cref="TcpFlowClient"/>.</summary>
 public abstract class TcpFlowOptions

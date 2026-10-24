@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
-using TcpFlow.Internal;
+using BigDog.TcpFlow.Internal;
 
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>One open TCP (or TLS) connection. Safe to send on from multiple threads at once.</summary>
 public sealed class TcpFlowConnection : IAsyncDisposable

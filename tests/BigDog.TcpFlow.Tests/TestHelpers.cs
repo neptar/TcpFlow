@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using MemoryPack;
 
-namespace TcpFlow.Tests;
+namespace BigDog.TcpFlow.Tests;
 
 internal static class TestHelpers
 {

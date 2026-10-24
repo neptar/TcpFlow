@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          # The .NET 8 runtime, so the test suite also runs against the library's net8.0 build.
+          dotnet-version: 8.0.x
+
+      - name: Work out the package version
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "args=-p:Version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=-p:VersionSuffix=ci.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - run: dotnet build -c Release ${{ steps.version.outputs.args }}
+
+      - run: dotnet test -c Release --no-build
+
+      - name: Pack
+        if: matrix.os == 'ubuntu-latest'
+        run: dotnet pack src/BigDog.TcpFlow -c Release --no-build -o artifacts ${{ steps.version.outputs.args }}
+
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          name: packages
+          path: artifacts/
+
+  package-smoke-test:
+    name: Package works with the .NET 8 SDK
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: artifacts
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.1xx
+
+      # The 8.0.1xx SDK ships Roslyn 4.8, the oldest compiler the source generator supports.
+      - name: Pin the .NET 8.0.1xx SDK
+        working-directory: tests/PackageSmokeTest
+        run: |
+          sdk=$(dotnet --list-sdks | grep -oE '^8\.0\.1[0-9]+' | sort -V | tail -1)
+          echo "{ \"sdk\": { \"version\": \"$sdk\", \"rollForward\": \"latestPatch\" } }" > global.json
+          dotnet --version
+
+      - name: Build and run a consumer of the package
+        working-directory: tests/PackageSmokeTest
+        run: |
+          version=$(basename ../../artifacts/BigDog.TcpFlow.*.nupkg .nupkg | sed 's/^BigDog\.TcpFlow\.//')
+          dotnet run -p:TcpFlowVersion="$version"
+
+  publish:
+    name: Publish to nuget.org
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, package-smoke-test]
+    runs-on: ubuntu-latest
+    # The nuget.org trusted publishing policy can be restricted to this environment. Add required reviewers to it
+    # (Settings > Environments) to approve each release by hand.
+    environment: nuget.org
+    permissions:
+      contents: read
+      id-token: write # lets the job request a GitHub OIDC token for trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: artifacts
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # Trusted publishing: exchange the job's OIDC token for an API key that is valid for one hour.
+      # No long-lived key is stored anywhere. Requested right before the push so it can't expire first.
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }} # your nuget.org profile name, not your email address
+
+      # Pushing the .nupkg also pushes the matching .snupkg to the symbol server.
+      - name: Push to nuget.org
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

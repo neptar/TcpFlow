@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TcpFlow.Example.Demos;
+using BigDog.TcpFlow.Example.Demos;
 
 // Usage: dotnet run -- [demo] [--verbose]
 //   demo: commands | chat | catalog | telemetry | tls | interactive | all (default)

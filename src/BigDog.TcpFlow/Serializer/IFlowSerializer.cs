@@ -1,7 +1,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 
-namespace TcpFlow.Serializer;
+namespace BigDog.TcpFlow.Serializer;
 
 /// <summary>
 /// Turns flow objects into bytes and back. Both ends of a connection must use the same serializer.

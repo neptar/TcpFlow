@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 
-namespace TcpFlow.Internal;
+namespace BigDog.TcpFlow.Internal;
 
 /// <summary>
 /// Wire format of one frame, all little-endian:

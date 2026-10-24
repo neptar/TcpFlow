@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
-namespace TcpFlow.Example.Demos;
+namespace BigDog.TcpFlow.Example.Demos;
 
 /// <summary>The basics: map a handler on the server, send from a client, reply through the context.</summary>
 public static class CommandsDemo

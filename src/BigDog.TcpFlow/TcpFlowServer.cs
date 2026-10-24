@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
-using TcpFlow.Internal;
+using BigDog.TcpFlow.Internal;
 
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>Accepts TcpFlow connections and dispatches incoming messages to mapped handlers.</summary>
 public sealed class TcpFlowServer : TcpFlowEndpoint
@@ -27,7 +27,7 @@ public sealed class TcpFlowServer : TcpFlowEndpoint
     }
 
     /// <summary>Creates a server. Call <see cref="Start"/> to begin accepting connections.</summary>
-    public TcpFlowServer(TcpFlowServerOptions options) : base(options, "TcpFlow.TcpFlowServer")
+    public TcpFlowServer(TcpFlowServerOptions options) : base(options, "BigDog.TcpFlow.TcpFlowServer")
     {
         _options = options;
     }

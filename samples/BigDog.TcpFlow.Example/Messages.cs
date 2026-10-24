@@ -1,4 +1,4 @@
-namespace TcpFlow.Example;
+namespace BigDog.TcpFlow.Example;
 
 // Messages are plain classes deriving from FlowObject. The TcpFlow generator gives each one a wire id (a hash of its
 // full name) and generates its serializer, so there's no reflection anywhere and the app can be published with AOT.

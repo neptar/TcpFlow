@@ -1,6 +1,10 @@
-# TcpFlow
+# BigDog.TcpFlow
 
-TcpFlow lets .NET applications exchange strongly typed objects over TCP with very little setup. You declare plain message classes, map handlers, and send. A source generator discovers your message types at compile time and generates [MemoryPack](https://github.com/Cysharp/MemoryPack) serializers for them, so nothing relies on reflection and apps can be published with **Native AOT**.
+[![NuGet](https://img.shields.io/nuget/v/BigDog.TcpFlow.svg)](https://www.nuget.org/packages/BigDog.TcpFlow)
+[![CI](https://github.com/neptar/TcpFlow/actions/workflows/ci.yml/badge.svg)](https://github.com/neptar/TcpFlow/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/neptar/TcpFlow/blob/main/LICENSE)
+
+BigDog.TcpFlow lets .NET applications exchange strongly typed objects over TCP with very little setup. You declare plain message classes, map handlers, and send. A source generator discovers your message types at compile time and generates [MemoryPack](https://github.com/Cysharp/MemoryPack) serializers for them, so nothing relies on reflection and apps can be published with **Native AOT**.
 
 ```csharp
 server.Map<Command>(async (command, ctx) =>
@@ -25,10 +29,10 @@ await client.SendAsync(new Command { Cmd = "echo", Arg = "hi" });
 ## Installation
 
 ```shell
-dotnet add package TcpFlow
+dotnet add package BigDog.TcpFlow
 ```
 
-The package brings in the TcpFlow source generator and the MemoryPack runtime. Requires .NET 10.
+The package brings in the TcpFlow source generator and the MemoryPack runtime. It supports **.NET 8, 9 and 10** (Native AOT included), and the generator works with the .NET 8 SDK and later.
 
 ## Quick start
 
@@ -37,7 +41,7 @@ The package brings in the TcpFlow source generator and the MemoryPack runtime. R
 Share these types between client and server (same project, or a shared class library).
 
 ```csharp
-using TcpFlow;
+using BigDog.TcpFlow;
 
 public class Command : FlowObject
 {
@@ -237,7 +241,7 @@ dotnet_diagnostic.TCPFLOW008.severity = error
 
 ## Message types and wire ids
 
-The generator emits an internal `TcpFlow.FlowTypes` class in every project that declares (or references) message types:
+The generator emits an internal `BigDog.TcpFlow.FlowTypes` class in every project that declares (or references) message types:
 
 ```csharp
 FlowTypes.Registry          // a FlowTypeRegistry with this project's types
@@ -315,11 +319,11 @@ Each message is one frame. All integers are little-endian:
 
 ## Examples
 
-`TcpFlow.Example` contains runnable demos:
+[`samples/BigDog.TcpFlow.Example`](https://github.com/neptar/TcpFlow/tree/main/samples/BigDog.TcpFlow.Example) contains runnable demos:
 
 ```shell
-dotnet run --project TcpFlow.Example                 # run all demos
-dotnet run --project TcpFlow.Example -- chat -v      # one demo, with debug logging
+dotnet run --project samples/BigDog.TcpFlow.Example                 # run all demos
+dotnet run --project samples/BigDog.TcpFlow.Example -- chat -v      # one demo, with debug logging
 ```
 
 | Demo | Shows |
@@ -335,10 +339,10 @@ dotnet run --project TcpFlow.Example -- chat -v      # one demo, with debug logg
 
 ```shell
 dotnet build
-dotnet test
+dotnet test        # runs against both the net8.0 and net10.0 builds (needs the .NET 8 runtime installed)
 ```
 
-The test suite covers round-trips, concurrent senders, broadcasts, frames split across reads, malformed and oversized frames, disconnects mid-frame, TLS pinning and rejection, registry behaviour, and the generator's output, diagnostics and incremental caching.
+The test suite covers round-trips, concurrent senders, broadcasts, frames split across reads, malformed and oversized frames, disconnects mid-frame, TLS pinning and rejection, registry behaviour, serialization (including byte-for-byte compatibility with MemoryPack's own generator), and the generator's output, diagnostics and incremental caching. [`tests/PackageSmokeTest`](https://github.com/neptar/TcpFlow/tree/main/tests/PackageSmokeTest) builds a consumer against the packed `.nupkg`; CI runs it with the .NET 8 SDK. See [RELEASING.md](https://github.com/neptar/TcpFlow/blob/main/RELEASING.md) for how releases are published.
 
 ## Not included (yet)
 
@@ -346,16 +350,6 @@ The test suite covers round-trips, concurrent senders, broadcasts, frames split 
 - Built-in request/response correlation (see the `catalog` demo for a small pattern).
 - Heartbeats or keep-alive messages.
 
-## Upgrading from 1.x
+## License
 
-2.0 changes the wire format and the API; 1.x and 2.x peers can't talk to each other.
-
-| 1.x | 2.0 |
-|---|---|
-| `Builder.CreateServer(port)` / `Builder.CreateClient(host, port)` | `new TcpFlowServer(port)` / `new TcpFlowClient(host, port)`, or the options constructors |
-| `server.Listen()` | `server.Start()` |
-| `client.Start()` | `await client.ConnectAsync()` |
-| `Send(...)`, `SendAll(...)` | `SendAsync(...)`, `BroadcastAsync(...)` |
-| `context.ConnectionId` (string) | `context.ConnectionId` (long), plus `context.ReplyAsync(...)` |
-| `.UseSsl(cert)` | `ServerCertificate` / `UseTls` + `PinnedServerCertificate` options |
-| JSON serialization | MemoryPack, with generated formatters; message types stay plain classes (only public read/write members are sent) |
+[MIT](https://github.com/neptar/TcpFlow/blob/main/LICENSE)

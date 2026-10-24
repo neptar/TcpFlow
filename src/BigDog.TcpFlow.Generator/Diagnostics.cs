@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace TcpFlow.Generator;
+namespace BigDog.TcpFlow.Generator;
 
 internal static class Diagnostics
 {

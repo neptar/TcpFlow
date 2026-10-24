@@ -1,4 +1,4 @@
-namespace TcpFlow;
+namespace BigDog.TcpFlow;
 
 /// <summary>
 /// Base class for every message that can flow over a TcpFlow connection.
@@ -6,7 +6,7 @@ namespace TcpFlow;
 /// <remarks>
 /// Subclasses are plain data classes: only public read/write properties and public fields are transmitted, and they
 /// need a public parameterless constructor. The TcpFlow source generator finds every non-abstract subclass, registers it
-/// in the generated <c>TcpFlow.FlowTypes.Registry</c> (and in <see cref="FlowTypeRegistry.Default"/>), generates its
+/// in the generated <c>BigDog.TcpFlow.FlowTypes.Registry</c> (and in <see cref="FlowTypeRegistry.Default"/>), generates its
 /// serializer, and reports anything that won't be transmitted.
 /// </remarks>
 public abstract class FlowObject;

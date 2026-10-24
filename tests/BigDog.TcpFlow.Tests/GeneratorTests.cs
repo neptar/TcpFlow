@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 using MemoryPack;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using TcpFlow.Generator;
+using BigDog.TcpFlow.Generator;
 
-namespace TcpFlow.Tests;
+namespace BigDog.TcpFlow.Tests;
 
 public class GeneratorTests
 {
@@ -27,7 +27,7 @@ public class GeneratorTests
     {
         var compilation = CSharpCompilation.Create(
             "GeneratorTest",
-            [CSharpSyntaxTree.ParseText("global using TcpFlow; global using System; global using System.Collections.Generic;"), CSharpSyntaxTree.ParseText(code)],
+            [CSharpSyntaxTree.ParseText("global using BigDog.TcpFlow; global using System; global using System.Collections.Generic;"), CSharpSyntaxTree.ParseText(code)],
             References,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable));
 
@@ -337,7 +337,7 @@ public class GeneratorTests
         var messages = CSharpSyntaxTree.ParseText("""
             namespace App;
             public class Payload { public string Name { get; set; } = ""; }
-            public class Hello : TcpFlow.FlowObject { public Payload? Payload { get; set; } }
+            public class Hello : BigDog.TcpFlow.FlowObject { public Payload? Payload { get; set; } }
             """);
         var other = CSharpSyntaxTree.ParseText("namespace App; class Unrelated { }");
         var compilation = CSharpCompilation.Create("Cache", [messages, other], References,
